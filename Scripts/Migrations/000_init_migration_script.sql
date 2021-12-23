@@ -1,5 +1,6 @@
 USE [master]
 GO
+
 CREATE DATABASE [CommerceClinic]
 GO
 
@@ -36,10 +37,10 @@ CREATE TABLE [MedicalStaff]
     [SecondName] NVARCHAR(60) NULL,
     [MiddleName] NVARCHAR(60) NULL,
     [Gender]     BIT          NOT NULL,
-    [CategoryId] INT          NOT NULL,
+    [CategoryId] INT          NULL,
     [Degree]     NVARCHAR(60) NULL,
     [Area]       NVARCHAR(60) NOT NULL,
-    FOREIGN KEY (CategoryId) REFERENCES [StaffCategory] (Id)
+    CONSTRAINT FK_MedicalStaff_To_StaffCategory FOREIGN KEY (CategoryId) REFERENCES [StaffCategory] (Id)
 );
 
 CREATE TABLE [Drugs]
@@ -57,9 +58,9 @@ CREATE TABLE [Prescriptions]
     [DrugId]         INT           NOT NULL,
     [Description]    NVARCHAR(100) NOT NULL,
     [ExpiresAt]      DATE          NOT NULL,
-    FOREIGN KEY (PatientId) REFERENCES [Patients] (Id),
-    FOREIGN KEY (MedicalStaffId) REFERENCES [MedicalStaff] (Id),
-    FOREIGN KEY (DrugId) REFERENCES [Drugs] (Id)
+    CONSTRAINT FK_Prescriptions_To_Patients FOREIGN KEY (PatientId) REFERENCES [Patients] (Id),
+    CONSTRAINT FK_Prescriptions_To_MedicalStaff FOREIGN KEY (MedicalStaffId) REFERENCES [MedicalStaff] (Id),
+    CONSTRAINT FK_Prescriptions_To_Drugs FOREIGN KEY (DrugId) REFERENCES [Drugs] (Id)
 );
 
 CREATE TABLE [TimeSlots]
@@ -90,7 +91,7 @@ CREATE TABLE [Services]
     [Description] NVARCHAR(100) NULL,
     [Price]       DECIMAL       NOT NULL,
     [TypeId]      INT           NOT NULL,
-    FOREIGN KEY (TypeId) REFERENCES [ServiceTypes] (Id)
+    CONSTRAINT FK_Services_To_ServicesTypes FOREIGN KEY (TypeId) REFERENCES [ServiceTypes] (Id)
 );
 
 CREATE TABLE [Referrals]
@@ -100,13 +101,13 @@ CREATE TABLE [Referrals]
     [MedicalStaffId] INT           NOT NULL,
     [ServiceId]      INT           NOT NULL,
     [TimeSlotId]     INT           NOT NULL,
-    [Result]         NVARCHAR(100) NOT NULL,
+    [Result]         NVARCHAR(100) NULL,
     [BillId]         INT           NULL,
-    FOREIGN KEY (PatientId) REFERENCES [Patients] (Id),
-    FOREIGN KEY (MedicalStaffId) REFERENCES [MedicalStaff] (Id),
-    FOREIGN KEY (ServiceId) REFERENCES [Services] (Id),
-    FOREIGN KEY (TimeSlotId) REFERENCES [TimeSlots] (Id),
-    FOREIGN KEY (BillId) REFERENCES [Bills] (Id)
+    CONSTRAINT FK_Referrals_To_Patients FOREIGN KEY (PatientId) REFERENCES [Patients] (Id),
+    CONSTRAINT FK_Referrals_To_MedicalStaff FOREIGN KEY (MedicalStaffId) REFERENCES [MedicalStaff] (Id),
+    CONSTRAINT FK_Referrals_To_Services FOREIGN KEY (ServiceId) REFERENCES [Services] (Id),
+    CONSTRAINT FK_Referrals_To_TimeSlots FOREIGN KEY (TimeSlotId) REFERENCES [TimeSlots] (Id),
+    CONSTRAINT FK_Referrals_To_Bills FOREIGN KEY (BillId) REFERENCES [Bills] (Id)
 );
 
 COMMIT TRANSACTION;
