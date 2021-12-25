@@ -10,12 +10,11 @@ GO
 -- Author:     Daniil Kuznetsov (daniilda)
 -- DateOfCreation: 08.12.2021
 ------------------------------------------------------------------------------------------------------------------------
-
 CREATE OR ALTER PROCEDURE [dbo].[CheckOut] @PatientId INT
 AS
 BEGIN
     SET NOCOUNT, XACT_ABORT ON;
-    DECLARE @TotalAmount DECIMAL;
+    DECLARE @TotalAmount DECIMAL = 0;
     DECLARE @Calculated DECIMAL;
     DECLARE @Referrals TABLE
                        (
@@ -26,12 +25,13 @@ BEGIN
     FROM dbo.Referrals
     WHERE Result IS NOT NULL
       AND BillId IS NULL
-      AND PatientId = 1
+      AND PatientId = @PatientId
 
     WHILE (SELECT COUNT(*) FROM @Referrals) > 0
         BEGIN
             SELECT TOP (1) @Calculated = Id FROM @Referrals ORDER BY Id;
             SET @TotalAmount = @TotalAmount + dbo.CalculateByReferral(@Calculated);
+            DELETE FROM @Referrals WHERE Id = @Calculated;
         END
     INSERT INTO dbo.Bills (Amount)
     VALUES (@TotalAmount)
